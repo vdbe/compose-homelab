@@ -1,0 +1,29 @@
+networks:
+  vaultwarden:
+
+services:
+  traefik:
+    networks:
+      - vaultwarden
+
+  vaultwarden:
+    image: "vaultwarden/server:latest"
+    #image: "vaultwarden/server:raspberry"
+
+    env_file:
+      - ${CONFIG_DIR}/vaultwarden/env_file.env
+
+    networks:
+      - vaultwarden
+
+    volumes:
+      - ${VOLUME_DIR}/vaultwarden/data:/data
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+      traefik.enable: true
+      traefik.http.routers.vaultwarden.rule: "Host(`vaultwarden.${SECRET_DOMAIN}`)"
+      traefik.http.routers.vaultwarden.entrypoints: "websecure"
+      traefik.http.routers.vaultwarden.tls.certresolver: "production"
