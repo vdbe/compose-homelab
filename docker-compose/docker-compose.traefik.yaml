@@ -1,0 +1,64 @@
+secrets:
+  cf_api_email:
+    file: ${SECRET_DIR}/cf_api_email.secret
+  cf_zone_api_token:
+    file: ${SECRET_DIR}/cf_zone_api_token.secret
+  cf_dns_api_token:
+    file: ${SECRET_DIR}/cf_dns_api_token.secret
+
+volumes:
+  traefik-letsencrypt:
+
+services:
+  traefik:
+    image: "traefik:latest"
+
+    secrets:
+      - cf_api_email
+      - cf_zone_api_token
+      - cf_dns_api_token
+
+    env_file:
+      - ${CONFIG_DIR}/traefik/env_file.env
+
+    network_mode: none
+
+    command:
+      #- "--log.level=DEBUG"
+      #- "--api.insecure=false"
+      - "--api.insecure=false"
+      - "--api.dashboard=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      #- "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      - "--certificatesresolvers.staging.acme.dnschallenge=true"
+      - "--certificatesresolvers.staging.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.staging.acme.dnschallenge.delaybeforecheck=10"
+      - "--certificatesresolvers.staging.acme.dnschallenge.resolvers=1.1.1.1:53"
+      - "--certificatesresolvers.staging.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.staging.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.staging.acme.storage=/letsencrypt/staging-acme.json"
+
+      - "--certificatesresolvers.production.acme.dnschallenge=true"
+      - "--certificatesresolvers.production.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.production.acme.dnschallenge.delaybeforecheck=10"
+      - "--certificatesresolvers.production.acme.dnschallenge.resolvers=1.1.1.1:53"
+      - "--certificatesresolvers.production.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.production.acme.storage=/letsencrypt/production-acme.json"
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+    ports:
+      #- "80:80"
+      - "443:443"
+      #- "8080:8080"
+      #
+    volumes:
+      - "traefik-letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+

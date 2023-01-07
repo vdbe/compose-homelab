@@ -1,0 +1,22 @@
+networks:
+  whoami:
+
+services:
+  traefik:
+    networks:
+      - whoami
+
+  whoami:
+    image: "traefik/whoami:latest"
+
+    networks:
+      - whoami
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+      traefik.enable: true
+      traefik.http.routers.whoami.rule: "Host(`whoami.${SECRET_DOMAIN}`)"
+      traefik.http.routers.whoami.entrypoints: "websecure"
+      traefik.http.routers.whoami.tls.certresolver: "production"

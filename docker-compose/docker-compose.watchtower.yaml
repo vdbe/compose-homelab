@@ -1,0 +1,19 @@
+networks:
+  watchtower:
+
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+
+    env_file:
+      - ${CONFIG_DIR}/watchtower/env_file.env
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+    networks:
+      - watchtower
