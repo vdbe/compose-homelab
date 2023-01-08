@@ -10,3 +10,7 @@ email used for cloudflare logins
 ## cf_zone_api_token
 - Zone -> Zone -> Read
 - Include -> Specific Zone -> `SECRET_DOMAIN`
+
+## cf_tunnel_cred_file
+Create the tunnel first \
+`cloudflared tunnel token --cred-file cf_tunnel_cred_file.secret "$TUNNEL_NAME"`

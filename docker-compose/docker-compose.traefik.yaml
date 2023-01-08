@@ -6,6 +6,10 @@ secrets:
   cf_dns_api_token:
     file: ${SECRET_DIR}/cf_dns_api_token.secret
 
+networks:
+  00_net_traefik:
+  cloudflare_tunnel:
+
 volumes:
   traefik-letsencrypt:
 
@@ -21,18 +25,28 @@ services:
     env_file:
       - ${CONFIG_DIR}/traefik/env_file.env
 
-    network_mode: none
+    networks:
+      00_net_traefik:
+        priority: 100
+        aliases:
+          - "ingress"
+      cloudflare_tunnel:
+        aliases:
+          - "ingress-cloudflare"
+          - "traefik-cloudflare"
+
 
     command:
       #- "--log.level=DEBUG"
-      #- "--api.insecure=false"
-      - "--api.insecure=false"
-      - "--api.dashboard=false"
+      - "--api=false"
+      #- "--api.insecure=true"
+      #- "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
 
-      #- "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      #- "--entrypoints.web.address=ingress:80"
+      - "--entrypoints.websecure.address=ingress:443"
+      - "--entrypoints.cloudflare.address=ingress-cloudflare:443"
 
       - "--certificatesresolvers.staging.acme.dnschallenge=true"
       - "--certificatesresolvers.staging.acme.dnschallenge.provider=cloudflare"
@@ -57,7 +71,7 @@ services:
       #- "80:80"
       - "443:443"
       #- "8080:8080"
-      #
+
     volumes:
       - "traefik-letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

@@ -21,7 +21,7 @@ services:
         com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
 
         traefik.enable: true
-        traefik.http.routers.xen-orchestra.rule: "Host(`xen-orchestra.${SECRET_DOMAIN}`)"
+        traefik.http.routers.xen-orchestra.rule: "Host(`xen-orchestra${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
         traefik.http.routers.xen-orchestra.entrypoints: "websecure"
         traefik.http.routers.xen-orchestra.tls.certresolver: "production"
 

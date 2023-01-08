@@ -24,6 +24,6 @@ services:
       com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
 
       traefik.enable: true
-      traefik.http.routers.vaultwarden.rule: "Host(`vaultwarden.${SECRET_DOMAIN}`)"
+      traefik.http.routers.vaultwarden.rule: "Host(`vaultwarden${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
       traefik.http.routers.vaultwarden.entrypoints: "websecure"
       traefik.http.routers.vaultwarden.tls.certresolver: "production"

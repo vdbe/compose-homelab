@@ -1,0 +1,28 @@
+secrets:
+  cf_tunnel_cred_file:
+    file: ${SECRET_DIR}/cf_tunnel_cred_file.secret
+
+networks:
+  cloudflare_tunnel:
+
+services:
+
+  cloudflare-tunnel:
+    image: "cloudflare/cloudflared:latest"
+
+    secrets:
+      - cf_tunnel_cred_file
+
+    networks:
+      - cloudflare_tunnel
+      - whoami
+
+    env_file:
+      - ${CONFIG_DIR}/cloudflare-tunnel/env_file.env
+
+    command: 'tunnel run compose-homelab'
+    user: root
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"

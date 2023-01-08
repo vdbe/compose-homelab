@@ -3,7 +3,7 @@
 BASEDIR=$(dirname "$0")
 
 # Default options
-DEFAULT_COMPOSE_MODULES="watchtower traefik"
+DEFAULT_COMPOSE_MODULES="watchtower traefik whoami cloudlare-tunnel"
 DEFAULT_ENV_FILE="${BASEDIR}/.env"
 DEFAULT_PROJECT_DIR="${BASEDIR}"
 DEFAULT_COMPOSE_DIR="${BASEDIR}/docker-compose/"
@@ -39,12 +39,16 @@ compose_files() {
     done;
 }
 
-# Argument 1: directry containt the docker-compose files
-# Argument 2: Array of docker-compose modules
+# Argument 1: Project Name
+# Argument 1: Project directory
+# Argument 2: Env file
+# Argument 3: directry containt the docker-compose files
+# Argument 4: Array of docker-compose modules
 compose_arguments() {
-    echo "--project-directory ${1}"
-    echo "--env-file ${2}"
-    shift 2
+    echo "--project-name ${1}"
+    echo "--project-directory ${2}"
+    echo "--env-file ${3}"
+    shift 3
 
     compose_files "$@"
 
@@ -52,10 +56,11 @@ compose_arguments() {
 
 PROJECT_DIR="$(remove_trailing_slash $PROJECT_DIR)"
 COMPOSE_DIR="$(remove_trailing_slash $COMPOSE_DIR)"
+PROJECT_NAME="${PROJECT_NAME:=$(basename $(realpath $PROJECT_DIR))}"
 
 
 user_arguments=$*
 set -- $COMPOSE_MODULES;
 # Note: Word splitting requried here
-docker compose $(compose_arguments "$PROJECT_DIR" "$ENV_FILE" "$COMPOSE_DIR" "$@") $user_arguments
+docker compose $(compose_arguments "$PROJECT_NAME" "$PROJECT_DIR" "$ENV_FILE" "$COMPOSE_DIR" "$@") $user_arguments
 
