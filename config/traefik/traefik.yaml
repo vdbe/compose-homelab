@@ -1,4 +1,9 @@
 ## Static configuration
+experimental:
+  plugins:
+    real-ip:
+      moduleName: github.com/Paxxs/traefik-get-real-ip
+      version: v1.0.2
 providers:
   file:
     directory: /FileProvider
@@ -8,10 +13,10 @@ providers:
     exposedByDefault: false
     defaultRule: "Host(`{{ index .Labels \"com.docker.compose.service\"}}{{ env \"SECRET_SUFFIX\" }}.{{ env \"SECRET_DOMAIN\" }}`)"
 log:
-  level: INFO
+  level: INFO # DEBUG, PANIC, FATA, ERROR, WARN, INFO
 api:
   insecure: false
-  dashboard: false
+  dashboard: true
   debug: false
 entryPoints:
   #web:
@@ -23,6 +28,9 @@ entryPoints:
     forwardedHeaders:
       #insecure: true
       trustedIPs: []
+    http:
+      middlewares:
+        - cloudflare-real-ip@file
 certificatesResolvers:
   staging:
     acme:

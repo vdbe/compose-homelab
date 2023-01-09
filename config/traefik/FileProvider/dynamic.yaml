@@ -1,9 +1,4 @@
 ## Dynamic configuration
-#http:
-#  routers:
-#    my-router2:
-#      rule: "Path(`/foo`)"
-#      service: service-foo
 
 tls:
   stores:
@@ -14,3 +9,38 @@ tls:
           main: {{ env "SECRET_DOMAIN" }}
           sans:
             - '*.{{ env "SECRET_DOMAIN" }}'
+
+http:
+  middlewares:
+    cloudflare-real-ip:
+      plugin:
+        real-ip:
+          Proxy:
+            - proxyHeadername: Cdn-Loop
+              proxyHeadervalue: cloudflare
+              realIP: Cf-Connecting-Ip
+
+              # Note: This is done by `.entrPoint.cloudflare.forwardedHeaders.trustedIps`
+              OverwriteXFF: false # default: false, v1.0.2 or above
+
+            #- proxyHeadername: "*"
+              #  realIP: RemoteAddr
+
+  routers:
+    api:
+      rule: Host(`traefik{{ env "SECRET_SUFFIX" }}.{{ env "SECRET_DOMAIN" }}`)
+      service: api@internal
+      entrypoints:
+        - websecure
+      tls:
+        certresolver: production
+
+    #whoami:
+    #  priority: 10
+    #  rule: Host(`whoami{{ env "SECRET_SUFFIX" }}.{{ env "SECRET_DOMAIN" }}`)
+    #  service: whoami-{{ env "PROJECT_NAME" }}@docker
+    #  entrypoints:
+    #    - websecure
+    #    - cloudflare
+    #  tls:
+    #    certresolver: production
