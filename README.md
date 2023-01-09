@@ -16,7 +16,7 @@ A simple modular homelab constructed of multiple docker-compose.yaml files.
         TLS -> Origin Server Name: `<Subdoain>.<Domain>` -> `whoami.example.com`
 
 ### Traefik
-[Traefik](https://github.com/traefik/traefik) \
+[Traefik](https://github.com/traefik/traefik)
 
 **REQUIRED MODULE**
 
@@ -32,7 +32,6 @@ A simple modular homelab constructed of multiple docker-compose.yaml files.
 ## Xen-Orchstra
 [Xen-Orchstra](https://github.com/ronivay/xen-orchestra-docker)
 
-
 ## Setup
 1. Clones this repo
 3. `cp example.env .env`
@@ -43,6 +42,7 @@ A simple modular homelab constructed of multiple docker-compose.yaml files.
 
 ## Structure
 - `./docker-compose/`: The docker-compose files
+- `./docker/`: Custom docker files
 - `./secret/`: The secrets
 - `./config/`: Additional config for services suchs as env_files
 - `./volume/`: Data that cannot be regenerated with a simple `docker compose up`

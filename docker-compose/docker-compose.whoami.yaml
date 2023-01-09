@@ -21,7 +21,7 @@ services:
       traefik.http.routers.whoami.entrypoints: "websecure"
       traefik.http.routers.whoami.tls.certresolver: "production"
 
-      traefik.http.routers.whoami-cf.rule: "Host(`whoami${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
+      #traefik.http.routers.whoami-cf.rule: "Host(`whoami${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
       traefik.http.routers.whoami-cf.entrypoints: "cloudflare"
       traefik.http.routers.whoami-cf.service: "whoami-${PROJECT_NAME}"
       traefik.http.routers.whoami-cf.tls.certresolver: "production"

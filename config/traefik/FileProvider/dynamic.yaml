@@ -1,0 +1,16 @@
+## Dynamic configuration
+#http:
+#  routers:
+#    my-router2:
+#      rule: "Path(`/foo`)"
+#      service: service-foo
+
+tls:
+  stores:
+    default:
+      defaultGeneratedCert:
+        resolver: production
+        domain:
+          main: {{ env "SECRET_DOMAIN" }}
+          sans:
+            - '*.{{ env "SECRET_DOMAIN" }}'

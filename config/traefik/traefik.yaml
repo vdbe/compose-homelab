@@ -1,0 +1,43 @@
+## Static configuration
+providers:
+  file:
+    directory: /FileProvider
+    watch: true
+  docker:
+    watch: true
+    exposedByDefault: false
+    defaultRule: "Host(`{{ index .Labels \"com.docker.compose.service\"}}{{ env \"SECRET_SUFFIX\" }}.{{ env \"SECRET_DOMAIN\" }}`)"
+log:
+  level: INFO
+api:
+  insecure: false
+  dashboard: false
+  debug: false
+entryPoints:
+  #web:
+  #  address: "ingress:80"
+  websecure:
+    address: "ingress:443"
+  cloudflare:
+    address: "ingress-cloudflare:443"
+    forwardedHeaders:
+      #insecure: true
+      trustedIPs: []
+certificatesResolvers:
+  staging:
+    acme:
+      storage: "/letsencrypt/staging-acme.json"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: "10" # test
+        resolvers:
+          - "1.1.1.1:53"
+  production:
+    acme:
+      storage: "/letsencrypt/production-acme.json"
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: "10"
+        resolvers:
+          - "1.1.1.1:53"

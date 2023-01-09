@@ -8,12 +8,29 @@ secrets:
 
 networks:
   00_net_traefik:
-  cloudflare_tunnel:
+  10_cloudflare_tunnel:
 
 volumes:
   traefik-letsencrypt:
 
 services:
+  pre-traefik:
+    build: ./docker/pre-traefik
+    #entrypoint: "/bin/sleep infinite"
+
+    env_file:
+      - ${CONFIG_DIR}/traefik/env_file.env
+
+    command:
+      - "/workdir/traefik.yaml"
+
+    networks:
+      00_net_traefik:
+      10_cloudflare_tunnel:
+
+    volumes:
+      - "${CONFIG_DIR}/traefik/traefik.yaml:/workdir/traefik.yaml"
+
   traefik:
     image: "traefik:latest"
 
@@ -30,38 +47,10 @@ services:
         priority: 100
         aliases:
           - "ingress"
-      cloudflare_tunnel:
+      10_cloudflare_tunnel:
         aliases:
           - "ingress-cloudflare"
           - "traefik-cloudflare"
-
-
-    command:
-      #- "--log.level=DEBUG"
-      - "--api=false"
-      #- "--api.insecure=true"
-      #- "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-
-      #- "--entrypoints.web.address=ingress:80"
-      - "--entrypoints.websecure.address=ingress:443"
-      - "--entrypoints.cloudflare.address=ingress-cloudflare:443"
-
-      - "--certificatesresolvers.staging.acme.dnschallenge=true"
-      - "--certificatesresolvers.staging.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.staging.acme.dnschallenge.delaybeforecheck=10"
-      - "--certificatesresolvers.staging.acme.dnschallenge.resolvers=1.1.1.1:53"
-      - "--certificatesresolvers.staging.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.staging.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.staging.acme.storage=/letsencrypt/staging-acme.json"
-
-      - "--certificatesresolvers.production.acme.dnschallenge=true"
-      - "--certificatesresolvers.production.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.production.acme.dnschallenge.delaybeforecheck=10"
-      - "--certificatesresolvers.production.acme.dnschallenge.resolvers=1.1.1.1:53"
-      - "--certificatesresolvers.production.acme.email=${ACME_EMAIL}"
-      - "--certificatesresolvers.production.acme.storage=/letsencrypt/production-acme.json"
 
     labels:
       com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
@@ -73,6 +62,12 @@ services:
       #- "8080:8080"
 
     volumes:
+      - "${CONFIG_DIR}/traefik/FileProvider:/FileProvider:ro"
+      - "${CONFIG_DIR}/traefik/traefik.yaml:/etc/traefik/traefik.yml:ro"
       - "traefik-letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+    depends_on:
+      pre-traefik:
+        condition: service_completed_successfully
 

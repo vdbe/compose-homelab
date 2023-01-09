@@ -3,7 +3,7 @@ secrets:
     file: ${SECRET_DIR}/cf_tunnel_cred_file.secret
 
 networks:
-  cloudflare_tunnel:
+  10_cloudflare_tunnel:
 
 services:
 
@@ -14,7 +14,7 @@ services:
       - cf_tunnel_cred_file
 
     networks:
-      - cloudflare_tunnel
+      - 10_cloudflare_tunnel
       - whoami
 
     env_file:
