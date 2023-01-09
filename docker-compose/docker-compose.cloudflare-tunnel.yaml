@@ -9,6 +9,7 @@ services:
 
   cloudflare-tunnel:
     image: "cloudflare/cloudflared:latest"
+    restart: "${RESTART_POLICY}"
 
     secrets:
       - cf_tunnel_cred_file

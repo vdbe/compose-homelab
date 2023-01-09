@@ -10,56 +10,58 @@ services:
       - xen-orchestra
 
   xen-orchestra:
-      image: ronivay/xen-orchestra:latest
-      stop_grace_period: 1m
+    image: ronivay/xen-orchestra:latest
+    restart: "${RESTART_POLICY}"
 
-      env_file:
-        - ${CONFIG_DIR}/traefik/env_file.env
+    stop_grace_period: 1m
 
-      labels:
-        com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
-        com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+    env_file:
+      - ${CONFIG_DIR}/traefik/env_file.env
 
-        traefik.enable: true
-        traefik.http.routers.xen-orchestra.rule: "Host(`xen-orchestra${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
-        traefik.http.routers.xen-orchestra.entrypoints: "websecure"
-        traefik.http.routers.xen-orchestra.tls.certresolver: "production"
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
 
-      networks:
-        - xen-orchestra
+      traefik.enable: true
+      traefik.http.routers.xen-orchestra.rule: "Host(`xen-orchestra${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
+      traefik.http.routers.xen-orchestra.entrypoints: "websecure"
+      traefik.http.routers.xen-orchestra.tls.certresolver: "production"
 
-      ports:
-          - "8080:80"
-          #- "443:443"
+    networks:
+      - xen-orchestra
 
-      # capabilities are needed for NFS mount
-      cap_add:
-        - SYS_ADMIN
+    ports:
+        - "8080:80"
+        #- "443:443"
 
-      # additional setting required for apparmor enabled systems. also needed for NFS mount
-      security_opt:
-        - apparmor:unconfined
+    # capabilities are needed for NFS mount
+    cap_add:
+      - SYS_ADMIN
 
-      volumes:
-        - ${VOLUME_DIR}/xen-orchestra/data:/var/lib/xo-server
-        - xen-orchestra-redis-data:/var/lib/redis
-        # mount certificate files to container if HTTPS is set with cert/key paths
-        #- /path/to/cert.pem:/cert.pem
-        #- /path/to/cert.key:/cert.key
-        # mount your custom CA to container if host certificates are issued by it and you want XO to trust it
-        #- /path/to/ca.pem:/host-ca.pem
+    # additional setting required for apparmor enabled systems. also needed for NFS mount
+    security_opt:
+      - apparmor:unconfined
 
-      # logging
-      logging: &default_logging
-          driver: "json-file"
-          options:
-              max-size: "1M"
-              max-file: "2"
+    volumes:
+      - ${VOLUME_DIR}/xen-orchestra/data:/var/lib/xo-server
+      - xen-orchestra-redis-data:/var/lib/redis
+      # mount certificate files to container if HTTPS is set with cert/key paths
+      #- /path/to/cert.pem:/cert.pem
+      #- /path/to/cert.key:/cert.key
+      # mount your custom CA to container if host certificates are issued by it and you want XO to trust it
+      #- /path/to/ca.pem:/host-ca.pem
 
-      # these are needed for file restore. allows one backup to be mounted at once which will be umounted after some minutes if not used (prevents other backups to be mounted during that)
-      # add loop devices (loop1, loop2 etc) if multiple simultaneous mounts needed.
-      #devices:
-      #  - "/dev/fuse:/dev/fuse"
-      #  - "/dev/loop-control:/dev/loop-control"
-      #  - "/dev/loop0:/dev/loop0"
+    # logging
+    logging: &default_logging
+        driver: "json-file"
+        options:
+            max-size: "1M"
+            max-file: "2"
+
+    # these are needed for file restore. allows one backup to be mounted at once which will be umounted after some minutes if not used (prevents other backups to be mounted during that)
+    # add loop devices (loop1, loop2 etc) if multiple simultaneous mounts needed.
+    #devices:
+    #  - "/dev/fuse:/dev/fuse"
+    #  - "/dev/loop-control:/dev/loop-control"
+    #  - "/dev/loop0:/dev/loop0"
 

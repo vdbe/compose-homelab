@@ -9,6 +9,7 @@ services:
   vaultwarden:
     image: "vaultwarden/server:latest"
     #image: "vaultwarden/server:raspberry"
+    restart: "${RESTART_POLICY}"
 
     env_file:
       - ${CONFIG_DIR}/vaultwarden/env_file.env

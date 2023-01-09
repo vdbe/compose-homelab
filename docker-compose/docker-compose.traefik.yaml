@@ -16,7 +16,10 @@ volumes:
 services:
   pre-traefik:
     build: ./docker/pre-traefik
+    restart: "${RESTART_POLICY}"
+
     #entrypoint: "/bin/sleep infinite"
+
 
     env_file:
       - ${CONFIG_DIR}/traefik/env_file.env
@@ -33,6 +36,7 @@ services:
 
   traefik:
     image: "traefik:latest"
+    restart: "${RESTART_POLICY}"
 
     secrets:
       - cf_api_email

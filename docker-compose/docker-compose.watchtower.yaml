@@ -4,6 +4,7 @@ networks:
 services:
   watchtower:
     image: containrrr/watchtower:latest
+    restart: "${RESTART_POLICY}"
 
     env_file:
       - ${CONFIG_DIR}/watchtower/env_file.env
