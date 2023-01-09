@@ -1,0 +1,54 @@
+## Static configuration
+providers:
+  file:
+    directory: /FileProvider
+    watch: true
+
+  docker:
+    watch: true
+    exposedByDefault: false
+
+log:
+  level: DEBUG
+
+api:
+  insecure: true
+  dashboard: true
+
+entryPoints:
+  #web:
+  #  address: "ingress:80"
+
+  websecure:
+    address: "ingress:443"
+    http:
+      tls: true
+
+  cloudflare:
+    address: "ingress-cloudflare:443"
+    forwardedHeaders:
+      #insecure: true
+      trustedIPs: []
+    http:
+      tls: true
+
+certificatesResolvers:
+  staging:
+    acme:
+      storage: "/letsencrypt/staging-acme.json"
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        #provider: cloudflare
+        delayBeforeCheck: "10"
+        resolvers:
+          - "1.1.1.1:53"
+
+  production:
+    acme:
+      storage: "/letsencrypt/production-acme.json"
+      dnsChallenge:
+        #provider: cloudflare
+        delayBeforeCheck: "10"
+        resolvers:
+          - "1.1.1.1:53"
+

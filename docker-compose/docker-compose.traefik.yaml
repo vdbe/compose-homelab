@@ -16,10 +16,9 @@ volumes:
 services:
   pre-traefik:
     build: ./docker/pre-traefik
-    restart: "${RESTART_POLICY}"
+    restart: "no"
 
     #entrypoint: "/bin/sleep infinite"
-
 
     env_file:
       - ${CONFIG_DIR}/traefik/env_file.env
