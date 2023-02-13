@@ -15,6 +15,9 @@ A simple modular homelab constructed of multiple docker-compose.yaml files.
     3. Addition applictation settings \
         TLS -> Origin Server Name: `<Subdoain>.<Domain>` -> `whoami.example.com`
 
+### Searx
+[Searx](https://github.com/searxng/searxng)
+
 ### Traefik
 [Traefik](https://github.com/traefik/traefik)
 

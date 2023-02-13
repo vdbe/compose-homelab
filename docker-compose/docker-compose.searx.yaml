@@ -1,0 +1,78 @@
+secrets:
+  searx_secret_key:
+    file: ${SECRET_DIR}/searx_secret_key.secret
+
+networks:
+  searx:
+  searx-redis:
+
+services:
+  traefik:
+    networks:
+      - searx
+
+  pre-searx:
+    build: ./docker/pre-searx
+    restart: "no"
+
+    #entrypoint: "/bin/sleep infinite"
+
+    secrets:
+      - searx_secret_key
+
+    command:
+      - "/workdir/settings.yaml"
+      - "/run/secrets/searx_secret_key"
+
+    network_mode: none
+
+    volumes:
+      - "${CONFIG_DIR}/searx/settings.yaml:/workdir/settings.yaml"
+
+  searx:
+    image: "searxng/searxng:latest"
+
+    networks:
+      - searx
+      - searx-redis
+
+    volumes:
+      - "${CONFIG_DIR}/searx/settings.yaml:/etc/searxng/settings.yml:ro"
+
+    env_file:
+      - ${CONFIG_DIR}/searx/env_file.env
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+      traefik.enable: true
+      #traefik.http.routers.searx.rule: "Host(`searx${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
+      traefik.http.routers.searx.entrypoints: "websecure"
+      traefik.http.routers.searx.tls.certresolver: "production"
+
+    depends_on:
+      pre-searx:
+        condition: service_completed_successfully
+      searx-redis:
+        condition: service_healthy
+
+  searx-redis:
+    image: "redis:alpine"
+    command: redis-server --save "" --appendonly "no"
+
+    networks:
+      searx-redis:
+
+    tmpfs:
+      - /var/lib/redis
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"

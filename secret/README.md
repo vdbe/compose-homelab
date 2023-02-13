@@ -14,3 +14,10 @@ email used for cloudflare logins
 ## cf_tunnel_cred_file
 Create the tunnel first \
 `cloudflared tunnel token --cred-file cf_tunnel_cred_file.secret "$TUNNEL_NAME"`
+
+## cf_tunnel_cred_file
+Create the tunnel first \
+`cloudflared tunnel token --cred-file cf_tunnel_cred_file.secret "$TUNNEL_NAME"`
+
+## searx_secret_key
+`openssl rand -hex 32 > searx_secret_key.secret`
