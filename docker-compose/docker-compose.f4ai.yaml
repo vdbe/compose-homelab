@@ -1,26 +1,26 @@
 networks:
-  whoami:
+  f4ai:
 
 services:
   traefik:
     networks:
-      - whoami
+      - f4ai
 
-  whoami:
-    image: "traefik/whoami:latest"
+  f4ai:
+    image: "ewood/f4ai:latest"
     restart: "${RESTART_POLICY}"
 
     networks:
-      - whoami
+      - f4ai
 
     labels:
       com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
       com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
 
       traefik.enable: true
-      #traefik.http.routers.whoami.rule: "Host(`whoami${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
+      traefik.http.routers.f4ai.rule: "Host(`f4ai.${SECRET_DOMAIN}`)"
       #traefik.http.routers.whoami.entrypoints: "websecure"
-      traefik.http.routers.whoami.tls.certresolver: "production"
+      traefik.http.routers.f4ai.tls.certresolver: "production"
 
       #traefik.http.routers.whoami-cf.rule: "Host(`whoami${SECRET_SUFFIX}.${SECRET_DOMAIN}`)"
       #traefik.http.routers.whoami-cf.entrypoints: "cloudflare"

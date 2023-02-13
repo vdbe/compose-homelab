@@ -1,0 +1,21 @@
+networks:
+  loki:
+
+
+services:
+  loki:
+    image: "grafana/loki:latest"
+    restart: "${RESTART_POLICY}"
+
+    command:
+      - '-config.file=/etc/loki/local-config.yaml'
+
+    env_file:
+      - ${CONFIG_DIR}/loki/env_file.env
+
+    networks:
+      - loki
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"

@@ -1,0 +1,43 @@
+networks:
+  prometheus:
+
+
+services:
+  traefik:
+    networks:
+      - prometheus
+
+  prometheus:
+    image: "prom/prometheus:latest"
+    restart: "${RESTART_POLICY}"
+
+    #entrypoint: "/bin/sleep infinite"
+    user: "0:0"
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.listen-address=:9090'
+
+    env_file:
+      - ${CONFIG_DIR}/prometheus/env_file.env
+
+    networks:
+      20_traefik:
+      prometheus:
+        aliases:
+          - "prom"
+
+    volumes:
+      - "${CONFIG_DIR}/prometheus/etc-prometheus:/etc/prometheus:ro"
+      - "${VOLUME_DIR}/prometheus/data:/prometheus"
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+      traefik.enable: true
+      traefik.http.routers.prometheus.entrypoints: "websecure"
+      traefik.http.routers.prometheus.tls.certresolver: "production"

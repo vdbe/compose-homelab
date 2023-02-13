@@ -1,0 +1,38 @@
+networks:
+  grafana:
+  loki:
+
+services:
+  traefik:
+    networks:
+      - grafana
+
+  grafana:
+    image: "grafana/grafana:latest"
+    restart: "${RESTART_POLICY}"
+
+    #entrypoint: "/bin/sleep infinite"
+    user: "0:0"
+
+    env_file:
+      - ${CONFIG_DIR}/grafana/env_file.env
+
+    networks:
+      grafana:
+      prometheus:
+      loki:
+
+    volumes:
+      - "${CONFIG_DIR}/grafana/provisioning:/etc/grafana/provisioning:ro"
+      - "${VOLUME_DIR}/grafana/data:/var/lib/grafana"
+
+    depends_on:
+      - prometheus
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"
+
+      traefik.enable: true
+      traefik.http.routers.grafana.entrypoints: "websecure"
+      traefik.http.routers.grafana.tls.certresolver: "production"

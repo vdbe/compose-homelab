@@ -10,7 +10,7 @@ A simple modular homelab constructed of multiple docker-compose.yaml files.
     https://one.dash.cloudflare.com/ -> Acces -> Tunnels -> Create tunnel
 2. Add public hostname \
     1. tunnel -> Public Hostname -> Add public Hostname
-    2. Service -> Type: `HTTPS`, URL: `ingress-cloudflare` or `traefik-cloudflare` \
+    2. Service -> Type: `HTTPS`, URL: `ingress-cloudflare` \
         (You can also directly go to your service without `traefik``)
     3. Addition applictation settings \
         TLS -> Origin Server Name: `<Subdoain>.<Domain>` -> `whoami.example.com`

@@ -16,7 +16,6 @@ services:
 
     networks:
       - 10_cloudflare_tunnel
-      - whoami
 
     env_file:
       - ${CONFIG_DIR}/cloudflare-tunnel/env_file.env

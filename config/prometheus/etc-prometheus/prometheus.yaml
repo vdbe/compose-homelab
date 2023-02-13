@@ -1,0 +1,25 @@
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  # scrape_timeout is set to the global default (10s).
+
+  external_labels:
+    monitor: 'compose-homelab'
+
+scrape_configs:
+  - job_name: traefik
+    #scrape_interval: 15m
+    static_configs:
+      - targets:
+        - 'ingress-traefik:8080'
+    #metrics_path: /metrics
+    #honor_labels: false
+    #honor_timestamps: true
+    #scheme: http
+    #follow_redirects: true
+    #body_size_limit: 0
+    #sample_limit: 0
+    #label_limit: 0
+    #label_name_length_limit: 0
+    #label_value_length_limit: 0
+    #target_limit: 0

@@ -1,0 +1,30 @@
+networks:
+  promtail:
+
+services:
+  loki:
+    networks:
+      - promtail
+
+  promtail:
+    image: "grafana/promtail:latest"
+    restart: "${RESTART_POLICY}"
+
+    command:
+      - '-config.file=/etc/promtail/promtail-config.yaml'
+      - '-config.expand-env=true'
+
+    env_file:
+      - ${CONFIG_DIR}/promtail/env_file.env
+
+    networks:
+      - promtail
+
+    volumes:
+      - "${CONFIG_DIR}/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+
+    labels:
+      com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
+      com.centurylinklabs.watchtower.scope: "${DEFAULT_WATCHTOWER_SCOPE}"

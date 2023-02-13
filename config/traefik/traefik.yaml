@@ -14,6 +14,14 @@ providers:
     defaultRule: "Host(`{{ index .Labels \"com.docker.compose.service\"}}{{ env \"SECRET_SUFFIX\" }}.{{ env \"SECRET_DOMAIN\" }}`)"
 log:
   level: INFO # DEBUG, PANIC, FATA, ERROR, WARN, INFO
+accessLog:
+  format: json
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        Cf-Ipcountry: keep
+        User-Agent: keep
 api:
   insecure: false
   dashboard: true
@@ -27,10 +35,15 @@ entryPoints:
     address: "ingress-cloudflare:443"
     forwardedHeaders:
       #insecure: true
-      trustedIPs: []
+      trustedIPs:
+        - "172.24.0.3/16"
     http:
       middlewares:
         - cloudflare-real-ip@file
+  traefik:
+    address: "ingress-traefik:8080"
+    #http:
+    #  tls: {}
 certificatesResolvers:
   staging:
     acme:
@@ -49,3 +62,8 @@ certificatesResolvers:
         delayBeforeCheck: "10"
         resolvers:
           - "1.1.1.1:53"
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true

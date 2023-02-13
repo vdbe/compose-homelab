@@ -7,8 +7,9 @@ secrets:
     file: ${SECRET_DIR}/cf_dns_api_token.secret
 
 networks:
-  00_net_traefik:
+  00_net_ingress:
   10_cloudflare_tunnel:
+  20_traefik:
 
 volumes:
   traefik-letsencrypt:
@@ -27,8 +28,9 @@ services:
       - "/workdir/traefik.yaml"
 
     networks:
-      00_net_traefik:
+      00_net_ingress:
       10_cloudflare_tunnel:
+      20_traefik:
 
     volumes:
       - "${CONFIG_DIR}/traefik/traefik.yaml:/workdir/traefik.yaml"
@@ -46,14 +48,16 @@ services:
       - ${CONFIG_DIR}/traefik/env_file.env
 
     networks:
-      00_net_traefik:
+      00_net_ingress:
         priority: 100
         aliases:
           - "ingress"
       10_cloudflare_tunnel:
         aliases:
           - "ingress-cloudflare"
-          - "traefik-cloudflare"
+      20_traefik:
+        aliases:
+          - "ingress-traefik"
 
     labels:
       com.centurylinklabs.watchtower.enable: "${DEFAULT_WATCHTOWER_ENABLE}"
