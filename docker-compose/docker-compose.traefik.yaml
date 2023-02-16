@@ -70,6 +70,13 @@ services:
       - "traefik-letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 30s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
     depends_on:
       pre-traefik:
         condition: service_completed_successfully

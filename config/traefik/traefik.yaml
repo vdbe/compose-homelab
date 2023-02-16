@@ -4,6 +4,8 @@ experimental:
     real-ip:
       moduleName: github.com/Paxxs/traefik-get-real-ip
       version: v1.0.2
+global:
+  sendAnonymousUsage: false
 providers:
   file:
     directory: /FileProvider
@@ -31,6 +33,8 @@ entryPoints:
     http:
       middlewares:
         - cloudflare-real-ip@file
+ping:
+  entryPoint: websecure
 certificatesResolvers:
   staging:
     acme:
